@@ -12,30 +12,45 @@ export class ReceitasService {
     private receitasRepository: Repository<Receita>,
   ) {}
 
-  create(createReceitaDto: CreateReceitaDto) {
-    const receita = this.receitasRepository.create(createReceitaDto);
+  async create(createUserDto: CreateReceitaDto) {
+    const receita = this.receitasRepository.create(createUserDto);
     return this.receitasRepository.save(receita);
   }
-
+  
   findAll() {
     return this.receitasRepository.find();
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} receita`;
+  async findOne(id: string) {
+    try {
+      const objectId = new ObjectId(id);
+      
+      // Tentativa 1: usando _id (padrão do MongoDB)
+      let receita = await this.receitasRepository.findOneBy({ _id: objectId });
+      
+      return receita;
+    } catch (error) {
+      console.error('Erro ao buscar receita:', error);
+      throw new NotFoundException(`Receita não encontrada. Detalhes: ${error.message}`);
+    }
   }
 
-  async update(id: string, updateReceitaDto: UpdateReceitaDto) {
+  async update(id: string, updateUserDto: UpdateReceitaDto) {
     const objectId = new ObjectId(id);
-    const receita = await this.receitasRepository.findOne({ where: { id: objectId }});
-    if (!receita) {
+    const user = await this.receitasRepository.findOne({ where: { _id: objectId } });
+    if (!user) {
       throw new NotFoundException('Receita não encontrada');
     }
-    this.receitasRepository.merge(receita, updateReceitaDto);
-    return this.receitasRepository.save(receita);
+    this.receitasRepository.merge(user, updateUserDto);
+    return this.receitasRepository.save(user);
   }
-
-  remove(id: string) {
-    return `This action removes a #${id} receita`;
+  
+  async remove(id: string) {
+    const objectId = new ObjectId(id);
+    const receita = await this.receitasRepository.findOne({ where: { _id: objectId } });
+    if (!receita) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+    return this.receitasRepository.remove(receita);
   }
 }

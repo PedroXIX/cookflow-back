@@ -4,7 +4,7 @@ import { Entity, Column, ObjectIdColumn } from 'typeorm';
 @Entity()
 export class Receita {
   @ObjectIdColumn()
-  id: ObjectId;
+  _id: ObjectId;
 
   @Column()
   titulo: string;
