@@ -1,6 +1,9 @@
 import { IsNotEmpty } from "class-validator";
 
 export class CreateReceitaDto {
+    @IsNotEmpty({ message: 'A imagem é obrigatória' })
+    imagem: string;
+    
     @IsNotEmpty({ message: 'O titulo é obrigatório' })
     titulo: string;
   

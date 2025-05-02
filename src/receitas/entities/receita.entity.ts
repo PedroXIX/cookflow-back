@@ -7,6 +7,9 @@ export class Receita {
   _id: ObjectId;
 
   @Column()
+  imagem: string;
+
+  @Column()
   titulo: string;
 
   @Column()
