@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,8 +15,15 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const password = await bcrypt.hash(createUserDto.password, 10); // Usamos o bcrypt para a hash da senha
-    const user = this.usersRepository.create({ ...createUserDto, password }); // Passamos a senha criptografada e o restante dos dados
+    // Verificar se o email já existe
+    const existingUser = await this.findOneByEmail(createUserDto.email);
+    if (existingUser) {
+      throw new ConflictException('Este email já está cadastrado');
+    }
+
+    // Prosseguir com a criação do usuário se o email for único
+    const password = await bcrypt.hash(createUserDto.password, 10);
+    const user = this.usersRepository.create({ ...createUserDto, password });
     return this.usersRepository.save(user);
   }
   
@@ -44,10 +51,26 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     const objectId = new ObjectId(id);
+    
+    // Verificar se o usuário existe
     const user = await this.usersRepository.findOne({ where: { _id: objectId } });
     if (!user) {
       throw new NotFoundException('Usuário não encontrado');
     }
+    
+    // Verificar se está tentando atualizar o email para um que já existe
+    if (updateUserDto.email && updateUserDto.email !== user.email) {
+      const existingUser = await this.findOneByEmail(updateUserDto.email);
+      if (existingUser) {
+        throw new ConflictException('Este email já está cadastrado para outro usuário');
+      }
+    }
+    
+    // Atualizar senha se fornecida
+    if (updateUserDto.password) {
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+    }
+    
     this.usersRepository.merge(user, updateUserDto);
     return this.usersRepository.save(user);
   }
