@@ -19,7 +19,7 @@ export class Receita {
   ingredientes: string[]; // Lista de ingredientes
 
   @Column("array")
-  passos: { numero: number; descricao: string; animacao: string; tipo: string; } []; // Cada passo do preparo como um item no array
+  passos: { numero: number; descricao: string; animacao: string; tipo: string; tempo:number; } []; // Cada passo do preparo como um item no array
 
   @Column()
   tempoPreparo: number;
@@ -32,5 +32,11 @@ export class Receita {
 
   @Column()
   porcoes: number; // Quantidade de porções
+
+  @Column()
+  calorias: number;
+
+  @Column()
+  rating: number;
 }
 

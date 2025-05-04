@@ -27,4 +27,10 @@ export class CreateReceitaDto {
   
     @IsNotEmpty({ message: 'As porcoes são obrigatórias' })
     porcoes: number;
+
+    @IsNotEmpty({ message: 'O campo calorias é obrigatória' })
+    calorias: number;
+
+    @IsNotEmpty({ message: 'O campo rating é obrigatório' })
+    rating: number;
 }
