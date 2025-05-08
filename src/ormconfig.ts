@@ -10,10 +10,4 @@ export const config: TypeOrmModuleOptions = {
   synchronize: true,
   logging: true,
   entities: [User, Receita, UserActivityLog],
-  // A opção abaixo precisa ser movida para as opções de conexão específicas do MongoDB
-  // useUnifiedTopology: true 
-  // Você pode usar o extra para opções específicas do driver
-  extra: {
-    useUnifiedTopology: true
-  }
 };
