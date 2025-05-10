@@ -4,17 +4,19 @@ import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from 'src/users/users.module';
 import { AuthGuard } from './auth.guard';
+import { LogsModule } from 'src/logs/logs.module'; // Importar o módulo de logs
 
 @Module({
   imports: [
     UsersModule,
+    LogsModule, // Adicionar o módulo de logs
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'secret', // A chave secreta do JWT
-      signOptions: { expiresIn: '1h' }, // O token expira em 1 hora
+      secret: process.env.JWT_SECRET || 'secret',
+      signOptions: { expiresIn: '1h' },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthGuard], 
-  exports: [AuthGuard], 
+  providers: [AuthService, AuthGuard],
+  exports: [AuthGuard],
 })
 export class AuthModule {}
